@@ -619,20 +619,33 @@ verify_range_loop(Name, Arity, ClosedForm, Cur, Max, Acc, Report) :-
     Next is Cur + 1,
     verify_range_loop(Name, Arity, ClosedForm, Next, Max, Acc1, Report).
 
-eval_closed_form(closed_form{kind:sum_1_to_n}, N, Value) :-
+eval_closed_form(ClosedForm, N, Value) :-
+    get_dict(kind, ClosedForm, Kind),
+    eval_closed_form_kind(Kind, ClosedForm, N, Value).
+
+eval_closed_form_kind(sum_1_to_n, _ClosedForm, N, Value) :-
     Value is (N * (N + 1)) // 2.
-eval_closed_form(closed_form{kind:factorial}, N, Value) :-
+
+eval_closed_form_kind(factorial, _ClosedForm, N, Value) :-
     factorial_eval(N, Value).
-eval_closed_form(closed_form{kind:constant_step_sum, formula:Formula}, N, Value) :-
+
+eval_closed_form_kind(constant_step_sum, ClosedForm, N, Value) :-
+    get_dict(formula, ClosedForm, Formula),
     eval_formula(Formula, N, Value).
-eval_closed_form(closed_form{kind:constant, formula:B0}, _N, B0).
-eval_closed_form(closed_form{kind:recurrence_only}, _N, _) :-
+
+eval_closed_form_kind(constant, ClosedForm, _N, Value) :-
+    get_dict(formula, ClosedForm, Value).
+
+eval_closed_form_kind(recurrence_only, _ClosedForm, _N, _) :-
     throw(error(domain_error(verifiable_closed_form, recurrence_only), _)).
-eval_closed_form(closed_form{kind:list_length}, _N, _) :-
+
+eval_closed_form_kind(list_length, _ClosedForm, _N, _) :-
     throw(error(domain_error(verifiable_closed_form, list_length), _)).
-eval_closed_form(closed_form{kind:list_sum}, _N, _) :-
+
+eval_closed_form_kind(list_sum, _ClosedForm, _N, _) :-
     throw(error(domain_error(verifiable_closed_form, list_sum), _)).
-eval_closed_form(closed_form{kind:normalizable_tail_recursion}, _N, _) :-
+
+eval_closed_form_kind(normalizable_tail_recursion, _ClosedForm, _N, _) :-
     throw(error(domain_error(verifiable_closed_form, normalizable_tail_recursion), _)).
 
 factorial_eval(0, 1) :- !.
