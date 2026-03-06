@@ -801,7 +801,6 @@ test(sum_closed_form) :-
     analyze_predicate(Clauses, sum_to, 2, Analysis),
     assertion(Analysis.closed_form.kind == sum_1_to_n).
 
-%/*
 test(sum_verification) :-
     Clauses = [
         sum_to(0, 0),
@@ -814,7 +813,6 @@ test(sum_verification) :-
     analyze_predicate(Clauses, sum_to, 2, Analysis),
     verify_on_range(Clauses, sum_to, 2, Analysis.closed_form, 10, Report),
     assertion(Report == verified(10)).
-%*/
 
 test(factorial_extraction) :-
     Clauses = [
